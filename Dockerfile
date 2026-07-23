@@ -1,8 +1,11 @@
-# Use a lightweight web server
-FROM nginx:alpine
+FROM node:18
 
-# Copy project files into nginx html directory
-COPY . /usr/share/nginx/html
+WORKDIR /app
 
-# Expose port 80
-EXPOSE 80
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+CMD ["node", "server.js"]

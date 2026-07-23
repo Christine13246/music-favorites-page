@@ -1,6 +1,6 @@
-// Load songs.json and populate the table
-fetch('songs.json')
-  .then(response => response.json())
+// Fetch songs from backend API
+fetch('/api/songs')
+  .then(res => res.json())
   .then(songs => {
     const tbody = document.querySelector('#songsTable tbody');
     songs.forEach(song => {
@@ -15,4 +15,4 @@ fetch('songs.json')
       tbody.appendChild(row);
     });
   })
-  .catch(err => console.error('Error loading songs:', err));
+  .catch(err => console.error(err));
