@@ -2,15 +2,12 @@ const express = require('express');
 const { google } = require('googleapis');
 const path = require('path');
 
-const app = express(); // <-- initialize Express first
-
-// Serve static files (your HTML, CSS, JS)
-app.use(express.static('public')); // <-- now this works
+const app = express();
 
 // OAuth2 client setup
 const oauth2Client = new google.auth.OAuth2(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
+  process.env.CLIENT_ID,        // export in Git Bash
+  process.env.CLIENT_SECRET,    // export in Git Bash
   'http://localhost:3000/oauth2callback'
 );
 
@@ -20,7 +17,10 @@ const youtube = google.youtube({
   auth: oauth2Client
 });
 
-// Routes...
+// Serve static files (frontend HTML, CSS, JS)
+app.use(express.static('public'));
+
+// Route to start login
 app.get('/login', (req, res) => {
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -29,6 +29,7 @@ app.get('/login', (req, res) => {
   res.redirect(url);
 });
 
+// OAuth2 callback route
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;
   const { tokens } = await oauth2Client.getToken(code);
@@ -36,21 +37,30 @@ app.get('/oauth2callback', async (req, res) => {
   res.redirect('/');
 });
 
+// Route to fetch ALL songs in playlist with pagination
 app.get('/api/songs', async (req, res) => {
   try {
-    const response = await youtube.playlistItems.list({
-      part: 'snippet,contentDetails',
-      playlistId: 'RDCLAK5uy_k0KkqT3D_36qFNHE9rq_Iz8VT-ZV7Jt0o',
-      maxResults: 10
-    });
+    let songs = [];
+    let nextPageToken = null;
 
-    const songs = response.data.items.map(item => ({
-      title: item.snippet.title,
-      artist: item.snippet.videoOwnerChannelTitle || 'Unknown',
-      releaseYear: item.snippet.publishedAt ? new Date(item.snippet.publishedAt).getFullYear() : 'N/A',
-      album: 'N/A',
-      link: `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`
-    }));
+    do {
+      const response = await youtube.playlistItems.list({
+        part: 'snippet,contentDetails',
+        playlistId: 'RDCLAK5uy_k0KkqT3D_36qFNHE9rq_Iz8VT-ZV7Jt0o', // replace with your playlist ID
+        maxResults: 50,
+        pageToken: nextPageToken
+      });
+
+      songs = songs.concat(response.data.items.map(item => ({
+        title: item.snippet.title,
+        artist: item.snippet.videoOwnerChannelTitle || 'Unknown',
+        releaseYear: item.snippet.publishedAt ? new Date(item.snippet.publishedAt).getFullYear() : 'N/A',
+        album: 'N/A', // YouTube doesn’t provide album info
+        link: `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`
+      })));
+
+      nextPageToken = response.data.nextPageToken;
+    } while (nextPageToken);
 
     res.json(songs);
   } catch (err) {
