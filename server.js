@@ -38,7 +38,7 @@ app.get('/api/songs', async (req, res) => {
     const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
     const response = await youtube.playlistItems.list({
       part: 'snippet,contentDetails',
-      playlistId: 'LL', // "Liked Videos" playlist
+      playlistId: 'RDCLAK5uy_k0KkqT3D_36qFNHE9rq_Iz8VT-ZV7Jt0o&playnext=1&si=dadLnP6qtGEnCiTT', 
       maxResults: 10
     });
 
