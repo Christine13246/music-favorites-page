@@ -1,14 +1,17 @@
-app.use(express.static('public'))
-
 const express = require('express');
 const { google } = require('googleapis');
-const app = express();
+const path = require('path');
+
+const app = express(); // <-- initialize Express first
+
+// Serve static files (your HTML, CSS, JS)
+app.use(express.static('public')); // <-- now this works
 
 // OAuth2 client setup
 const oauth2Client = new google.auth.OAuth2(
-  process.env.CLIENT_ID,        // exported in Git Bash
-  process.env.CLIENT_SECRET,    // exported in Git Bash
-  'http://localhost:3000/oauth2callback' // must match redirect URI in Google Cloud
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  'http://localhost:3000/oauth2callback'
 );
 
 // YouTube client
@@ -17,7 +20,7 @@ const youtube = google.youtube({
   auth: oauth2Client
 });
 
-// Route to start login
+// Routes...
 app.get('/login', (req, res) => {
   const url = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -26,7 +29,6 @@ app.get('/login', (req, res) => {
   res.redirect(url);
 });
 
-// OAuth2 callback route
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;
   const { tokens } = await oauth2Client.getToken(code);
@@ -34,12 +36,11 @@ app.get('/oauth2callback', async (req, res) => {
   res.redirect('/');
 });
 
-// Route to fetch songs
 app.get('/api/songs', async (req, res) => {
   try {
     const response = await youtube.playlistItems.list({
       part: 'snippet,contentDetails',
-      playlistId: 'RDCLAK5uy_k0KkqT3D_36qFNHE9rq_Iz8VT-ZV7Jt0o', // your playlist ID
+      playlistId: 'RDCLAK5uy_k0KkqT3D_36qFNHE9rq_Iz8VT-ZV7Jt0o',
       maxResults: 10
     });
 
@@ -58,9 +59,7 @@ app.get('/api/songs', async (req, res) => {
   }
 });
 
-// Serve frontend
-app.use(express.static('public'));
-
+// Start server
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
 });
