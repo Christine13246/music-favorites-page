@@ -1,3 +1,5 @@
+app.use(express.static('public'))
+
 const express = require('express');
 const { google } = require('googleapis');
 const app = express();
