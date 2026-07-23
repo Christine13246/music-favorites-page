@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Cornfield Chase",
+    "artist": "Hans Zimmer",
+    "year": 2014,
+    "album": "Interstellar OST",
+    "albumLink": "https://music.youtube.com/playlist?list=OLAK5uy_kCornfieldAlbum",
+    "songLink": "https://music.youtube.com/watch?v=UDVtMYqUAyw"
+  },
+  {
+    "title": "Essence",
+    "artist": "Wizkid ft. Tems",
+    "year": 2020,
+    "album": "Made in Lagos",
+    "albumLink": "https://music.youtube.com/playlist?list=OLAK5uy_kMadeInLagos",
+    "songLink": "https://music.youtube.com/watch?v=9f5zD7ZxFhM"
+  },
+  {
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "year": 2019,
+    "album": "After Hours",
+    "albumLink": "https://music.youtube.com/playlist?list=OLAK5uy_kAfterHours",
+    "songLink": "https://music.youtube.com/watch?v=4NRXx6U8ABQ"
+  }
+]
