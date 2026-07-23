@@ -3,27 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <title>My Favorite Songs</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    a { color: blue; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
 </head>
 <body>
-  <h1>My Favorite Songs (YouTube Music)</h1>
+  <h1>My Favorite Songs</h1>
+  <button onclick="login()">Login with Google</button>
   <table id="songsTable">
     <thead>
       <tr>
-        <th>Song</th>
+        <th>Title</th>
         <th>Artist</th>
-        <th>Release Year</th>
+        <th>Year</th>
         <th>Album</th>
         <th>Link</th>
       </tr>
     </thead>
-    <tbody>
-      <!-- Filled dynamically -->
-    </tbody>
+    <tbody></tbody>
   </table>
-  <footer>
-    <p>Merci beaucoup · Grazie · Gracias</p>
-  </footer>
-  <script src="script.js"></script>
+
+  <script>
+    async function loadSongs() {
+      try {
+        const res = await fetch('/api/songs');
+        const songs = await res.json();
+        const tbody = document.querySelector('#songsTable tbody');
+        tbody.innerHTML = '';
+
+        songs.forEach(song => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${song.title}</td>
+            <td>${song.artist}</td>
+            <td>${song.releaseYear}</td>
+            <td>${song.album}</td>
+            <td>${song.link ? `<a href="${song.link}" target="_blank">Listen</a>` : 'N/A'}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Error loading songs:', err);
+      }
+    }
+
+    function login() {
+      window.location.href = '/login';
+    }
+
+    // Load songs on page load
+    loadSongs();
+  </script>
 </body>
 </html>

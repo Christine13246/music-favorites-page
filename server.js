@@ -51,13 +51,16 @@ app.get('/api/songs', async (req, res) => {
         pageToken: nextPageToken
       });
 
-      songs = songs.concat(response.data.items.map(item => ({
-        title: item.snippet.title,
-        artist: item.snippet.videoOwnerChannelTitle || 'Unknown',
-        releaseYear: item.snippet.publishedAt ? new Date(item.snippet.publishedAt).getFullYear() : 'N/A',
-        album: 'N/A', // YouTube doesn’t provide album info
-        link: `https://www.youtube.com/watch?v=${item.contentDetails.videoId}`
-      })));
+      songs = songs.concat(response.data.items.map(item => {
+        const videoId = item.contentDetails?.videoId;
+        return {
+          title: item.snippet.title,
+          artist: item.snippet.videoOwnerChannelTitle || 'Unknown',
+          releaseYear: item.snippet.publishedAt ? new Date(item.snippet.publishedAt).getFullYear() : 'N/A',
+          album: 'N/A', // YouTube doesn’t provide album info
+          link: videoId ? `https://www.youtube.com/watch?v=${videoId}` : null
+        };
+      }));
 
       nextPageToken = response.data.nextPageToken;
     } while (nextPageToken);
